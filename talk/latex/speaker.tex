@@ -1,0 +1,10 @@
+% Speaker copy: slide + handout notes, plus a full-height shaded column for the script. Built by build.py (XeLaTeX).
+\documentclass[11pt]{article}
+\input{build/tex/config.tex}
+\input{latex/preamble.tex}
+\GeometrySpeaker
+\renewcommand{\DocKind}{Speaker copy}
+\begin{document}
+\ifCover\CoverPage\fi
+\input{build/tex/speaker-body.tex}
+\end{document}

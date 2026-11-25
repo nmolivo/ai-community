@@ -1,0 +1,23 @@
+# Talk settings. Everything here is optional; defaults live in build.py.
+title: "Stable Diffusion in Action"
+subtitle: "NLP, CNNs, Transformers, image generation, and fine-tuning"
+speaker: ""
+event: ""
+date: ""
+
+paper: letter            # letter | a4
+cover_page: true
+dpi: 150                 # slide image resolution
+
+script_column_in: 3.0    # width of the shaded speaker-script column (inches)
+min_notes_mm: 24         # the script shrinks (down to 8 pt) to leave at least this much ruled Notes space
+speaker_shows_handout_notes: true   # speaker copy repeats the handout notes under the slide
+handout_blank_lines: false          # true = fill the rest of each handout page with ruled lines
+export_pptx_notes: true  # also write output/<deck>-with-script.pptx (script in the PowerPoint notes pane)
+
+# Fonts must be installed on the machine that runs the build; missing ones fall back to Latin Modern.
+fonts:
+  body: "Crimson Text"
+  heading: "Fira Sans"
+  script: "DejaVu Serif"      # the speaker script uses its own font on purpose
+  code: "DejaVu Sans Mono"

@@ -1,0 +1,225 @@
+% =====================================================================================
+%  Shared look for the handout and the speaker copy.  Compiled with XeLaTeX.
+%  Edit colours, fonts and the code-block style here.
+% =====================================================================================
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{listings}
+
+% ------------------------------------------------------------------ palette
+\definecolor{pPink}{HTML}{FAD2E7}
+\definecolor{pMint}{HTML}{D2FAD3}
+\definecolor{pLav}{HTML}{DFD2FA}
+\definecolor{pPeach}{HTML}{F5DAC9}
+\definecolor{ink}{HTML}{5E5870}
+\definecolor{acc}{HTML}{8E4F86}
+\definecolor{teal}{HTML}{3F8A8C}
+\colorlet{colbg}{pPeach!62!white}        % shaded speaker-script column
+\colorlet{colrule}{pPeach!55!ink!45}
+\definecolor{codebg}{HTML}{F4EFFC}       % code blocks
+\definecolor{codecomment}{HTML}{7D7793}
+\definecolor{codenum}{HTML}{A59FB8}
+\definecolor{codenumber}{HTML}{B5651D}
+
+% ------------------------------------------------------------------ fonts (names come from config.yml)
+% Each font falls back to Latin Modern when it is not installed, and logs a note that build.py reports.
+\newcommand{\TryFont}[3]{\IfFontExistsTF{#1}{#2}{\typeout{talk: font '#1' not installed}#3}}
+\TryFont{\FontBody}{\setmainfont{\FontBody}}{\setmainfont{Latin Modern Roman}}
+\TryFont{\FontHeading}{\setsansfont{\FontHeading}}{\setsansfont{Latin Modern Sans}}
+\TryFont{\FontCode}{\setmonofont[Scale=MatchLowercase]{\FontCode}}{\setmonofont[Scale=MatchLowercase]{Latin Modern Mono}}
+% the speaker script gets its own family so it never looks like the handout text
+\TryFont{\FontScript}{\newfontfamily\ScriptText{\FontScript}}{\newfontfamily\ScriptText{Latin Modern Roman}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\linespread{1.07}
+\setlength{\leftmargini}{1.4em}
+\setlength{\leftmarginii}{1.2em}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\providecommand{\passthrough}[1]{#1}
+\providecommand{\pandocbounded}[1]{#1}
+
+% ------------------------------------------------------------------ code blocks
+%  \codesize is redefined by the speaker column so code shrinks together with the script text.
+\newcommand{\codesize}{\fontsize{8.6}{10.8}\selectfont}
+
+\lstdefinestyle{talk}{
+  basicstyle=\ttfamily\codesize\color{ink},
+  keywordstyle=\color{acc}\bfseries,
+  keywordstyle={[2]\color{teal}\bfseries},
+  stringstyle=\color{teal},
+  commentstyle=\color{codecomment}\itshape,
+  identifierstyle=\color{ink},
+  numberstyle=\ttfamily\fontsize{6.5}{8}\selectfont\color{codenum},
+  numbers=left, numbersep=6pt, stepnumber=1,
+  backgroundcolor=\color{codebg},
+  frame=l, framerule=2.6pt, rulecolor=\color{acc},
+  xleftmargin=27pt, framexleftmargin=24pt, framexrightmargin=0pt,
+  framextopmargin=4pt, framexbottommargin=4pt,
+  aboveskip=0.9em, belowskip=0.7em,
+  breaklines=true, breakatwhitespace=false, breakindent=1.2em,
+  postbreak=\mbox{\textcolor{acc}{\scriptsize$\hookrightarrow$\,}},
+  columns=fullflexible, keepspaces=true, tabsize=4, showstringspaces=false,
+  extendedchars=true, escapeinside={(*@}{@*)},
+}
+\lstset{style=talk}
+
+% languages listings does not know
+\lstdefinelanguage{json}{
+  morestring=[b]", sensitive=true, morekeywords={true,false,null},
+}
+\lstdefinelanguage{yaml}{
+  morestring=[b]", morestring=[b]', morecomment=[l]{\#}, sensitive=true,
+  morekeywords={true,false,null,yes,no},
+}
+
+% ------------------------------------------------------------------ header / footer
+\newcommand{\CurSlide}{0}
+\newcommand{\DocKind}{}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[L]{\sffamily\scriptsize\color{ink}\TalkTitle\ \textperiodcentered\ \DocKind}
+\fancyfoot[R]{\sffamily\scriptsize\color{ink}Slide \CurSlide\ / \TalkNumSlides}
+
+% ------------------------------------------------------------------ pieces
+\newcommand{\SlideFrame}[1]{%
+  \begingroup\setlength{\fboxsep}{0pt}\setlength{\fboxrule}{0.5pt}%
+  \fcolorbox{ink!35}{white}{\includegraphics[width=\dimexpr\linewidth-2\fboxrule\relax]{#1}}%
+  \endgroup}
+
+\newcommand{\RuledLines}[1]{% fills the remaining vertical space with ruled lines, #1 = spacing
+  \leaders\vbox to #1{\vss\hbox to \linewidth{\color{ink!35}\leaders\hrule height 0.4pt\hfill}}\vfill}
+
+\newcommand{\CoverPage}{%
+  \thispagestyle{empty}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[pLav] (current page.north west) rectangle ([yshift=-72mm]current page.north east);
+    \fill[pPink] ([yshift=-72mm]current page.north west) rectangle ([yshift=-76mm]current page.north east);
+    \fill[pMint] ([yshift=-76mm]current page.north west) rectangle ([yshift=-79mm]current page.north east);
+  \end{tikzpicture}%
+  \vspace*{22mm}%
+  {\sffamily\bfseries\fontsize{30}{34}\selectfont\color{ink}\TalkTitle\par}%
+  \vspace{4mm}%
+  {\sffamily\fontsize{15}{19}\selectfont\color{ink}\TalkSubtitle\par}%
+  \vspace{62mm}%
+  {\sffamily\large\color{acc}\bfseries\DocKind\par}%
+  \vspace{3mm}%
+  {\sffamily\color{ink}\TalkSpeaker\par\TalkEvent\par\TalkDate\par}%
+  \clearpage}
+
+\newcommand{\HandoutPage}[2]{%
+  \renewcommand{\CurSlide}{#2}%
+  \SlideFrame{build/slides/slide-#1.png}\par
+  \vspace{4mm}%
+  \input{build/tex/handout-#1.tex}\par
+  \ifBlankLines\vspace{2mm}\RuledLines{8.5mm}\fi
+  \clearpage}
+
+% ------------------------------------------------------------------ speaker column
+%  The script is typeset in a box exactly as wide as the column. It is tried at 11 pt and shrinks
+%  step by step (to 8.5 pt) until it leaves \MinNotes of ruled "Notes" space. If it still does not
+%  fit, it is set at 9.5 pt and continues in the column on extra pages (\vsplit), so nothing is lost.
+\newlength{\ColInnerW}\newlength{\ColInnerH}\newlength{\ScriptMaxH}
+\AtBeginDocument{%
+  \setlength{\ColInnerW}{\dimexpr\ColW-10mm\relax}%
+  \setlength{\ColInnerH}{\dimexpr\paperheight-22mm\relax}%
+  % column height minus header block (12 mm) and the NOTES label/gap (9 mm) minus the minimum notes lines
+  \setlength{\ScriptMaxH}{\dimexpr\ColInnerH-21mm-\MinNotes\relax}}
+
+\newsavebox{\ScriptMeasure}
+\newbox\ScriptRest
+\newbox\ScriptPart
+\newif\ifScriptOver
+\newcommand{\ScriptFile}{}
+
+% #1 font size, #2 leading, #3 code size, #4 code leading
+\newcommand{\ScriptBody}[4]{{%
+  \ScriptText\fontsize{#1}{#2}\selectfont
+  \renewcommand{\codesize}{\fontsize{#3}{#4}\selectfont}%
+  \raggedright\setlength{\parskip}{0.55em}\setlength{\parindent}{0pt}%
+  \setlength{\leftmargini}{1.2em}%
+  \input{\ScriptFile}\par}}
+
+% a plain vbox (not a minipage) so that \vsplit can break it between lines
+\makeatletter
+\newcommand{\ScriptBox}[4]{\vbox{\hsize=\ColInnerW \@parboxrestore \ScriptBody{#1}{#2}{#3}{#4}}}
+\makeatother
+
+% Try a size; if the script does not leave room for the notes, try the next smaller one (#5).
+\newcommand{\TryFit}[5]{%
+  \setbox\ScriptMeasure\ScriptBox{#1}{#2}{#3}{#4}%
+  \ifdim\dimexpr\ht\ScriptMeasure+\dp\ScriptMeasure\relax>\ScriptMaxH
+    #5%
+  \else
+    \def\ChosenSize{{#1}{#2}{#3}{#4}}%
+  \fi}
+
+\newcommand{\FitScript}{%
+  \ScriptOverfalse
+  \TryFit{11}{14.6}{9.5}{12}{%
+  \TryFit{10.5}{13.7}{9}{11.4}{%
+  \TryFit{10}{13}{8.6}{10.8}{%
+  \TryFit{9.5}{12.3}{8.2}{10.3}{%
+  \TryFit{9}{11.7}{7.8}{9.8}{%
+  \TryFit{8.5}{11}{7.4}{9.3}{%
+    \ScriptOvertrue
+    \def\ChosenSize{{9.5}{12.3}{8.2}{10.3}}}}}}}}}
+
+\newcommand{\ColumnLabel}[1]{{\sffamily\bfseries\scriptsize\color{ink}#1}}
+
+% One column page: header, a chunk of script taken from \ScriptRest, then ruled notes lines to the bottom.
+\newcommand{\ColumnPage}[2]{%
+  \ifdim\dimexpr\ht\ScriptRest+\dp\ScriptRest\relax>\ScriptMaxH
+    \splittopskip=0pt \splitmaxdepth=\maxdimen \vbadness=10000
+    \setbox\ScriptPart\vsplit\ScriptRest to \ScriptMaxH
+  \else
+    \setbox\ScriptPart\box\ScriptRest
+  \fi
+  \vbox to \ColInnerH{\hsize=\ColInnerW\linewidth=\ColInnerW\parindent=0pt\parskip=0pt\normalfont
+    \hbox to \hsize{\ColumnLabel{#1}\hfill\ColumnLabel{SLIDE #2}}%
+    \vskip 1.6mm
+    \hbox to \hsize{\color{colrule}\leaders\hrule height 0.6pt\hfill}%
+    \vskip 3.5mm
+    \box\ScriptPart
+    \vskip 5mm
+    \ColumnLabel{NOTES}\par
+    \vskip 0.5mm
+    \leaders\vbox to 8mm{\vss\hbox to \ColInnerW{\color{colrule}\leaders\hrule height 0.4pt\hfill}}\vfill
+  }}
+
+% Prepare \ScriptRest for slide #1 (zero-padded id) and return nothing.
+\newcommand{\PrepareScript}[2]{%
+  \renewcommand{\ScriptFile}{build/tex/script-#1.tex}%
+  \FitScript
+  \global\setbox\ScriptRest\expandafter\ScriptBox\ChosenSize
+  \ifScriptOver\typeout{SCRIPT-CONTINUED slide #2}\fi}
+
+\newcommand{\ColumnOverlay}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[colbg] ([xshift=-\ColW]current page.north east) rectangle (current page.south east);
+    \draw[colrule,line width=0.6pt] ([xshift=-\ColW]current page.north east) -- ([xshift=-\ColW]current page.south east);
+    \node[anchor=north west,inner sep=0pt] at ([xshift=-\ColW+5mm,yshift=-11mm]current page.north east) {#1};
+  \end{tikzpicture}}
+
+% extra pages when the script is longer than one column
+\newcommand{\ContinueScript}[1]{%
+  \ifvoid\ScriptRest\else
+    \clearpage
+    \leavevmode\hbox to 0pt{\ColumnOverlay{\ColumnPage{SCRIPT (CONT.)}{#1}}\hss}%
+    {\sffamily\small\color{ink}Slide #1: script continues in the column \par}%
+    \ContinueScript{#1}%
+  \fi}
+
+\newcommand{\SpeakerPage}[2]{%
+  \renewcommand{\CurSlide}{#2}%
+  \leavevmode\hbox to 0pt{\ColumnOverlay{\PrepareScript{#1}{#2}\ColumnPage{SCRIPT}{#2}}\hss}%
+  \SlideFrame{build/slides/slide-#1.png}\par
+  \ifSpeakerHandout\vspace{4mm}{\small\input{build/tex/handout-#1.tex}\par}\fi
+  \ContinueScript{#2}%
+  \clearpage}
